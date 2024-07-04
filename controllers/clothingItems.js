@@ -1,8 +1,8 @@
 const clothingItem = require("../models/clothingItem");
 
-router.get('/items',getItems);
+/* router.get('/items',getItems);
 router.delete('/items/:itemId',deleteItem);
-router.post('/items',addItem);
+router.post('/items',addItem); */
 
 module.exports.getItems =  (req, res) => {
   clothingItem.find({})
