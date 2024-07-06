@@ -6,15 +6,15 @@ router.post('/items',addItem); */
 
 module.exports.getItems =  (req, res) => {
   clothingItem.find({})
-  .then(items =>  res.send({data:items}))
+  .then(items =>  res.status(200).res.send(items))
   .catch(() => res.status(500).send({message:'Error'}))};
 
 module.exports.deleteItem = (req, res) => {
   clothingItem.findByIdAndDelete(req.params.itemId)
-  .then(item =>  res.send({data:item}))
+  .then(item =>  res.send(item))
   .catch(() => res.status(500).send({message:'Error'}))};
 
 module.exports.addItem = (req, res) => {
   clothingItem.create(req.body)
-  .then(item =>  res.send({data:item}))
+  .then(item =>  res.send(item))
   .catch(() => res.status(500).send({message:'Error'}))};
