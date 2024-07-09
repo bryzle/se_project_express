@@ -9,11 +9,11 @@ module.exports.getUsers = (req, res) => {
     .then(users =>
       res.status(200).send(users)
     )
-    .catch(() => {
-      return res
+    .catch(() =>
+       res
         .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
-    });
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR }))
+
 };
 
 module.exports.getUser = (req, res) => {
