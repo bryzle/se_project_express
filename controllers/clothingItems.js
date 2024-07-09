@@ -12,7 +12,7 @@ module.exports.getItems = (req, res) => {
       res.status(200).send(items);
     })
 
-    .catch(() => {
+    .catch((err) => {
       if (err.name === "") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
@@ -29,7 +29,7 @@ module.exports.deleteItem = (req, res) => {
     .findByIdAndDelete(req.params.itemId)
     .orFail()
     .then((item) => res.send(item))
-    .catch(() => {
+    .catch((err) => {
       if (err.name === "") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
@@ -95,7 +95,7 @@ module.exports.likeItem = (req, res) => {
 module.exports.dislikeItem = (req, res) => {
   clothingItem.findByIdAndUpdate(
     req.params.itemId,
-    { $pull: { likes: req.user._id } }, 
+    { $pull: { likes: req.user._id } },
     { new: true }
   )
     .orfail()
