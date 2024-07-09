@@ -1,12 +1,3 @@
-//name — the name of the clothing item, a required string from 2 to 30 characters
-//weather — a required string that describes the weather type. Make sure it matches the weather type you defined in your React app ('hot', 'warm', and'cold'). Use the enum validator to implement the field.
-//imageUrl — the picture of the clothing item, a required string for the image URL
-//owner — a link to the item author's model of the ObjectId type, a required field
-//likes — a list of users who liked the item, an ObjectId array with a reference to the user modal (empty by default)//
-//createdAt — the item creation date, a field with the Date type and the default value Date.now
-
-//https://github.com/konsumer/mongoose-type-url for url//
-
 const mongoose = require("mongoose");
 const validator = require("validator");
 

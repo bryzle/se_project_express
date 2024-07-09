@@ -22,9 +22,10 @@ module.exports.getItems = (req, res) => {
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
+      else { return
       res
         .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });}
     });
 };
 
@@ -49,10 +50,10 @@ module.exports.deleteItem = (req, res) => {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.BAD_REQUEST });
-      }
+      }else{
       res
         .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });}
     });
 };
 
@@ -80,10 +81,10 @@ module.exports.addItem = (req, res) => {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.BAD_REQUEST });
-      }
+      }else {
       res
         .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });}
     });
 };
 
@@ -106,10 +107,10 @@ module.exports.likeItem = (req, res) => {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.BAD_REQUEST });
-      }
+      } else {
       res
         .status(ERROR_CODES.SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR });}
     });
 };
 
@@ -138,9 +139,9 @@ module.exports.dislikeItem = (req, res) => {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.BAD_REQUEST });
-      }
+      } else {
       res
         .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });}
     });
 };
