@@ -19,5 +19,8 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  rules: { camelcase: ["error", { allow: ["_id"] }] },
+  rules: {
+    camelcase: ["error", { allow: ["_id"] }],
+    "no-underscore-dangle": ["error", { allow: ["_id"] }],
+  },
 };
