@@ -5,6 +5,12 @@ router.delete('/items/:itemId',deleteItem);
 router.post('/items',addItem); */
 
 module.exports.getItems = (req, res) => {
+
+  if (!req.user || !req.user._id) {
+    return res
+      .status(ERROR_CODES.SERVER_ERROR)
+      .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+  }
   clothingItem
     .find({})
     .orFail()
@@ -13,10 +19,16 @@ module.exports.getItems = (req, res) => {
     })
 
     .catch((err) => {
+      console.error(err);
       if (err.name === "") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.BAD_REQUEST });
+      }
+      if (err.name === "DocumentNotFoundError") {
+        return res
+          .status(ERROR_CODES.NOT_FOUND)
+          .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
       res
         .status(ERROR_CODES.SERVER_ERROR)
@@ -30,10 +42,21 @@ module.exports.deleteItem = (req, res) => {
     .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
+      console.error(err);
       if (err.name === "") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
+      }
+      if (err.name === "DocumentNotFoundError") {
+        return res
+          .status(ERROR_CODES.NOT_FOUND)
+          .send({ message: ERROR_MESSAGES.NOT_FOUND });
+      }
+      if (err.name === "CastError") {
+        return res
+          .status(ERROR_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.BAD_REQUEST });
       }
       res
         .status(ERROR_CODES.SERVER_ERROR)
@@ -73,18 +96,24 @@ module.exports.addItem = (req, res) => {
 };
 
 module.exports.likeItem = (req, res) => {
-  clothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true }
-  )
+  clothingItem
+    .findByIdAndUpdate(
+      req.params.itemId,
+      { $addToSet: { likes: req.user._id } },
+      { new: true }
+    )
     .orFail()
     .then((item) => res.status(200).json(item))
     .catch((err) => {
+      console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .json({ message: ERROR_MESSAGES.NOT_FOUND });
+      } else if (err.name === "CastError") {
+        return res
+          .status(ERROR_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.BAD_REQUEST });
       }
       res
         .status(ERROR_CODES.SERVER_ERROR)
@@ -93,18 +122,30 @@ module.exports.likeItem = (req, res) => {
 };
 
 module.exports.dislikeItem = (req, res) => {
-  clothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $pull: { likes: req.user._id } },
-    { new: true }
-  )
-    .orfail()
+  clothingItem
+    .findByIdAndUpdate(
+      req.params.itemId,
+      { $pull: { likes: req.user._id } },
+      { new: true }
+    )
+    .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res
+          .status(ERROR_CODES.NOT_FOUND)
+          .json({ message: ERROR_MESSAGES.NOT_FOUND });
+      }
       if (err.name === "") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
+      }
+      else if(err.name === "CastError") {
+        return res
+          .status(ERROR_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.BAD_REQUEST });
       }
       res
         .status(ERROR_CODES.SERVER_ERROR)
