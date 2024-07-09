@@ -104,7 +104,7 @@ module.exports.likeItem = (req, res) => {
           .status(ERROR_CODES.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.BAD_REQUEST });
       }
-      res
+      return res
         .status(ERROR_CODES.SERVER_ERROR)
         .json({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
@@ -136,7 +136,7 @@ module.exports.dislikeItem = (req, res) => {
           .status(ERROR_CODES.BAD_REQUEST)
           .send({ message: ERROR_MESSAGES.BAD_REQUEST });
       }
-      res
+      return res
         .status(ERROR_CODES.SERVER_ERROR)
         .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
