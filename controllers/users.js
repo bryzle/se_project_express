@@ -1,8 +1,7 @@
 const user = require("../models/user");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
-/* router.get('/users',getUsers);
-router.get('/users/:id',getUser);
-router.post('/users',createUser); */
+
+
 
 module.exports.getUsers = (req, res) => {
   user
