@@ -5,13 +5,12 @@ const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 module.exports.getItems = (req, res) => {
   clothingItem
     .find({})
-    .orFail()
+
     .then((items) => {
-      res.status(200).send(items);
+      res.send(items);
     })
 
     .catch((err) => {
-      console.error(err);
       if (err.name === "") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
@@ -35,7 +34,6 @@ module.exports.deleteItem = (req, res) => {
     .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
-      console.error(err);
       if (err.name === "") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
@@ -58,8 +56,6 @@ module.exports.deleteItem = (req, res) => {
 };
 
 module.exports.addItem = (req, res) => {
-
-
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
@@ -72,7 +68,7 @@ module.exports.addItem = (req, res) => {
     .create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send(item))
     .catch((err) => {
-      console.error(err);
+
       if (err.name === "ValidationError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
@@ -92,9 +88,9 @@ module.exports.likeItem = (req, res) => {
       { new: true }
     )
     .orFail()
-    .then((item) => res.status(200).json(item))
+    .then((item) => res.json(item))
     .catch((err) => {
-      console.error(err);
+
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
@@ -120,7 +116,7 @@ module.exports.dislikeItem = (req, res) => {
     .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
-      console.error(err);
+
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
