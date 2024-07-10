@@ -43,7 +43,7 @@ module.exports.addItem = (req, res) => {
     return res.status(ERROR_CODES.BAD_REQUEST).send(ERROR_MESSAGES.BAD_REQUEST);
   }
 
-  clothingItem
+  return clothingItem
     .create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send(item))
     .catch((err) => {

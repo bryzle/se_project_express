@@ -28,7 +28,7 @@ module.exports.getUser = (req, res) => {
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
-      
+
       return res
         .status(ERROR_CODES.SERVER_ERROR)
         .send({ message: ERROR_MESSAGES.SERVER_ERROR });
@@ -45,7 +45,7 @@ module.exports.createUser = (req, res) => {
   }
 
 
-  user
+  return user
     .create({ name, avatar })
 
     .then((users) => res.send(users))
