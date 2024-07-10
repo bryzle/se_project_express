@@ -34,11 +34,6 @@ module.exports.deleteItem = (req, res) => {
     .orFail()
     .then((item) => res.send(item))
     .catch((err) => {
-      if (err.name === "") {
-        return res
-          .status(ERROR_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.NOT_FOUND });
-      }
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
