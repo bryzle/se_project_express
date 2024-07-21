@@ -19,7 +19,6 @@ const jwt = require("jsonwebtoken");
 module.exports.getCurrentUsers = (req, res) => {
   console.log("getCurrentUsers");
   const userId = req.user._id;
-
   user
     .findById(userId)
     .select("-password")
@@ -27,7 +26,7 @@ module.exports.getCurrentUsers = (req, res) => {
       if (!user) {
         return res
           .status(ERROR_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.NOT_FOUND });
+          .json({ message: ERROR_MESSAGES.NOT_FOUND });
       }
       res.send(user);
     })
@@ -48,25 +47,29 @@ module.exports.getCurrentUsers = (req, res) => {
         .status(ERROR_CODES.SERVER_ERROR)
         .send({ message: ERROR_MESSAGES.SERVER_ERROR })
     });
-
-  // Your code logic here
 };
 
 module.exports.getUser = (req, res) => {
-  console.log("getUser");
+  console.log("getUser called");
+  console.log("req.user: ",req.user);
+
+  const userId = req.params.id === 'me' ? req.user._id : req.params.id;
+  console.log("userId: ",userId);
   user
-    .findById(req.params.id)
+    .findById(userId)
     .select("-password")
     .then((user) => {
       if (!user) {
+        console.log("user not found");
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
+      console.log("user found: ",user);
       res.send(user);
     })
     .catch((err) => {
-      console.error(err);
+      console.error("Error in getUser", err);
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
