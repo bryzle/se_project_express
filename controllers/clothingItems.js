@@ -16,8 +16,17 @@ module.exports.getItems = (req, res) => {
 module.exports.deleteItem = (req, res) => {
   clothingItem
     .findByIdAndDelete(req.params.itemId)
-    .orFail()
-    .then((item) => res.send(item))
+    .then((item) => {
+      if (!item) {
+        return res
+          .status(ERROR_CODES.NOT_FOUND)
+          .send({ message: ERROR_MESSAGES.NOT_FOUND });
+      }
+      if(item.owner.toString() !== req.user._id) {
+        return res.status(ERROR_CODES.FORBIDDEN).send({ message: ERROR_MESSAGES.FORBIDDEN });}
+
+      res.send(item)})
+
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         return res

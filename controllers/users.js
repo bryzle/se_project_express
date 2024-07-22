@@ -56,17 +56,16 @@ module.exports.getCurrentUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  console.log("getUser called");
-  console.log("req.user: ",req.user);
+  
 
   const userId = req.user_id;
-  console.log("userId: ",userId);
+
   user
     .findById(userId)
     .select("-password")
     .then((user) => {
       if (!user) {
-        console.log("user not found");
+
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
