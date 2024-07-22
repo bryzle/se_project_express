@@ -3,7 +3,7 @@ const userRouter = require("./users");
 const clothingItemRouter = require("./clothingItems");
 const signupRouter = require("./signup");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
-const signinRouter = require("./signin");
+const signinRouter = require("./signin.js");
 
 router.use("/users", userRouter);
 router.use("/items", clothingItemRouter);

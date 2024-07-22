@@ -152,8 +152,8 @@ module.exports.login = (req, res) => {
   }
   return user
     .findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+    .then((users) => {
+      const token = jwt.sign({ _id: users._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
       res.send({ token });
@@ -166,7 +166,7 @@ module.exports.login = (req, res) => {
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res,next) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
 
@@ -176,16 +176,15 @@ module.exports.updateUser = (req, res) => {
 
   return user
     .findById(userId)
-    .then((user) => {
-      if (!user) {
+    .then((users) => {
+      if (!users) {
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
-      return user.updateOne(updates);
+      return users.updateOne(updates);
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
         return res
           .status(400)
