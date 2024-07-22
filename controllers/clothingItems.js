@@ -14,7 +14,7 @@ module.exports.getItems = (req, res) => {
     );
 };
 module.exports.deleteItem = (req, res) => {
-  clothingItem
+  return clothingItem
     .findByIdAndDelete(req.params.itemId)
     .then((item) => {
       if (!item) {

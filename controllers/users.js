@@ -1,8 +1,8 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const user = require("../models/user");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
-const bcrypt = require("bcryptjs");
 const { JWT_SECRET } = require("../utils/config");
-const jwt = require("jsonwebtoken");
 
 /* module.exports.getUsers = (req, res) => {
   user
@@ -17,27 +17,23 @@ const jwt = require("jsonwebtoken");
  */
 
 module.exports.getCurrentUsers = (req, res) => {
-  console.log("getCurrentUsers called");
-  console.log("req.user: ",req.user);
   const userId = req.user._id;
-  console.log("userId: ",userId);
+
   user
     .findById(userId)
     .select("-password")
-    .then((user) => {
-      if (!user) {
-        console.log("user not found");
+    .then((users) => {
+      if (!users) {
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .json({ message: ERROR_MESSAGES.NOT_FOUND });
       }
-      console.log("user found: ",user);
-      res.status(200).send(user);
 
+      res.status(200).send(users);
     })
     .catch((err) => {
       console.error("Error in getCurrentUsers", err);
-       if (err.name === "CastError") {
+      if (err.name === "CastError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
           .json({ message: "Invalid user ID format." });
@@ -51,13 +47,11 @@ module.exports.getCurrentUsers = (req, res) => {
 
       return res
         .status(ERROR_CODES.SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR })
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 
 module.exports.getUser = (req, res) => {
-  
-
   const userId = req.user_id;
 
   user
@@ -65,12 +59,11 @@ module.exports.getUser = (req, res) => {
     .select("-password")
     .then((user) => {
       if (!user) {
-
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
-      console.log("user found: ",user);
+
       res.send(user);
     })
     .catch((err) => {
@@ -93,7 +86,6 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = async (req, res) => {
-  console.log("createUser");
   const { name, avatar, email, password } = req.body;
 
   // Validate required fields
@@ -154,13 +146,12 @@ module.exports.createUser = async (req, res) => {
 };
 
 module.exports.login = (req, res) => {
-  console.log("login");
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).send({ message: 'Email and password are required' });
+    return res.status(400).send({ message: "Email and password are required" });
   }
   return user
-    .findUserByCredentials( email, password )
+    .findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
@@ -176,7 +167,6 @@ module.exports.login = (req, res) => {
 };
 
 module.exports.updateUser = (req, res) => {
-  console.log("updateUser");
   const userId = req.user._id;
   const { name, avatar } = req.body;
 
