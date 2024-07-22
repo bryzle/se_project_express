@@ -2,7 +2,7 @@ const clothingItem = require("../models/clothingItem");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 module.exports.getItems = (req, res) => {
-  clothingItem
+  return clothingItem
     .find({})
 
     .then((items) => {

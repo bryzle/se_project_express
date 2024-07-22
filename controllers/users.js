@@ -190,6 +190,6 @@ module.exports.updateUser = (req, res,next) => {
           .status(400)
           .json({ msg: "Validation Error", errors: err.errors });
       }
-      next();
+      return next();
     });
 };
