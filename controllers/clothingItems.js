@@ -25,7 +25,7 @@ module.exports.deleteItem = (req, res) => {
       if(item.owner.toString() !== req.user._id) {
         return res.status(ERROR_CODES.FORBIDDEN).send({ message: ERROR_MESSAGES.FORBIDDEN });}
 
-      res.send(item)})
+      return res.send(item)})
 
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {

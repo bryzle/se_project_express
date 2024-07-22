@@ -29,7 +29,7 @@ module.exports.getCurrentUsers = (req, res) => {
           .json({ message: ERROR_MESSAGES.NOT_FOUND });
       }
 
-      res.status(200).send(users);
+      return res.status(200).send(users);
     })
     .catch((err) => {
       console.error("Error in getCurrentUsers", err);
