@@ -54,17 +54,17 @@ module.exports.getCurrentUsers = (req, res) => {
 module.exports.getUser = (req, res) => {
   const userId = req.user_id;
 
-  user
+  return user
     .findById(userId)
     .select("-password")
-    .then((user) => {
-      if (!user) {
+    .then((users) => {
+      if (!users) {
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
 
-      res.send(user);
+      return res.send(users);
     })
     .catch((err) => {
       console.error("Error in getUser", err);
@@ -174,7 +174,7 @@ module.exports.updateUser = (req, res) => {
   if (name) updates.name = name;
   if (avatar) updates.avatar = avatar;
 
-  user
+  return user
     .findById(userId)
     .then((user) => {
       if (!user) {
@@ -189,8 +189,8 @@ module.exports.updateUser = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(400)
-          .json({ msg: "Validation Error", errors: err.errors }); // Handle validation errors
+          .json({ msg: "Validation Error", errors: err.errors });
       }
-      next(err); // Pass the error to the error handling middleware
+      next();
     });
 };
