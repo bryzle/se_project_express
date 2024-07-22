@@ -17,35 +17,41 @@ const jwt = require("jsonwebtoken");
  */
 
 module.exports.getCurrentUsers = (req, res) => {
-  console.log("getCurrentUsers");
+  console.log("getCurrentUsers called");
+  console.log("req.user: ",req.user);
   const userId = req.user._id;
+  console.log("userId: ",userId);
   user
     .findById(userId)
     .select("-password")
     .then((user) => {
       if (!user) {
+        console.log("user not found");
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .json({ message: ERROR_MESSAGES.NOT_FOUND });
       }
-      res.send(user);
+      console.log("user found: ",user);
+      res.status(200).send(user);
+
     })
     .catch((err) => {
-      console.error(err);
+      console.error("Error in getCurrentUsers", err);
        if (err.name === "CastError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
-          .send({ message: "Invalid user ID format." });
+          .json({ message: "Invalid user ID format." });
       }
+      console.error("Error in getCurrentUsers", err);
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.NOT_FOUND });
+          .json({ message: ERROR_MESSAGES.NOT_FOUND });
       }
 
       return res
         .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR })
+        .json({ message: ERROR_MESSAGES.SERVER_ERROR })
     });
 };
 
@@ -53,7 +59,7 @@ module.exports.getUser = (req, res) => {
   console.log("getUser called");
   console.log("req.user: ",req.user);
 
-  const userId = req.params.id === 'me' ? req.user._id : req.params.id;
+  const userId = req.user_id;
   console.log("userId: ",userId);
   user
     .findById(userId)
