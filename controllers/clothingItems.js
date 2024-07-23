@@ -2,30 +2,38 @@ const clothingItem = require("../models/clothingItem");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 module.exports.getItems = (req, res) => {
-  return clothingItem
+   clothingItem
     .find({})
-
-    .then((items) => {
-      res.send(items);
-    })
-
+    .then((items) =>
+      res.send(items)
+    )
     .catch(() =>
-      res.status(ERROR_CODES.SERVER_ERROR).send({ message: ERROR_MESSAGES.SERVER_ERROR })
+       res
+        .status(ERROR_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR })
     );
 };
+
 module.exports.deleteItem = (req, res) => {
+  const { itemId } = req.params;
+
   return clothingItem
-    .findByIdAndDelete(req.params.itemId)
+    .findByIdAndDelete(itemId)
     .then((item) => {
       if (!item) {
         return res
           .status(ERROR_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.NOT_FOUND });
+          .json({ message: ERROR_MESSAGES.NOT_FOUND });
       }
-      if(item.owner.toString() !== req.user._id) {
-        return res.status(ERROR_CODES.FORBIDDEN).send({ message: ERROR_MESSAGES.FORBIDDEN });}
 
-      return res.send(item)})
+      if (String(item.owner) !== req.user._id) {
+        return res
+          .status(ERROR_CODES.FORBIDDEN)
+          .send({ message: ERROR_MESSAGES.FORBIDDEN });
+      }
+
+      return item.deleteOne().then(() => res.send({ message: "Item deleted" }));
+    })
 
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
@@ -57,9 +65,13 @@ module.exports.addItem = (req, res) => {
     .then((item) => res.status(201).send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(ERROR_CODES.BAD_REQUEST).send({ message: ERROR_MESSAGES.BAD_REQUEST });
+        return res
+          .status(ERROR_CODES.BAD_REQUEST)
+          .send({ message: ERROR_MESSAGES.BAD_REQUEST });
       }
-      return res.status(ERROR_CODES.SERVER_ERROR).send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      return res
+        .status(ERROR_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 

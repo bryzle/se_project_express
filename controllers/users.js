@@ -4,18 +4,6 @@ const user = require("../models/user");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-/* module.exports.getUsers = (req, res) => {
-  user
-    .find({})
-    .then((users) => res.send(users))
-    .catch(() =>
-      res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR })
-    );
-};
- */
-
 module.exports.getCurrentUsers = (req, res) => {
   const userId = req.user._id;
 
@@ -32,13 +20,13 @@ module.exports.getCurrentUsers = (req, res) => {
       return res.status(200).send(users);
     })
     .catch((err) => {
-      console.error("Error in getCurrentUsers", err);
+
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
           .json({ message: "Invalid user ID format." });
       }
-      console.error("Error in getCurrentUsers", err);
+
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
@@ -67,7 +55,7 @@ module.exports.getUser = (req, res) => {
       return res.send(users);
     })
     .catch((err) => {
-      console.error("Error in getUser", err);
+
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
@@ -117,7 +105,7 @@ module.exports.createUser = async (req, res) => {
     newUser.password = undefined;
     return res.send(newUser);
   } catch (err) {
-    console.error(err);
+
     if (err.name === "ValidationError") {
       return res
         .status(ERROR_CODES.BAD_REQUEST)
@@ -129,16 +117,7 @@ module.exports.createUser = async (req, res) => {
         .status(ERROR_CODES.CONFLICT)
         .send({ message: ERROR_MESSAGES.CONFLICT });
     }
-    if (err.name === "CastError") {
-      return res
-        .status(ERROR_CODES.BAD_REQUEST)
-        .send({ message: "Invalid user ID format." });
-    }
-    if (err.name === "DocumentNotFoundError") {
-      return res
-        .status(ERROR_CODES.NOT_FOUND)
-        .send({ message: ERROR_MESSAGES.NOT_FOUND });
-    }
+
     return res
       .status(ERROR_CODES.SERVER_ERROR)
       .send({ message: ERROR_MESSAGES.SERVER_ERROR });
@@ -148,7 +127,9 @@ module.exports.createUser = async (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).send({ message: "Email and password are required" });
+    return res
+      .status(ERROR_CODES.BAD_REQUEST)
+      .send({ message: ERROR_MESSAGES.BAD_REQUEST });
   }
   return user
     .findUserByCredentials(email, password)
@@ -160,13 +141,19 @@ module.exports.login = (req, res) => {
     })
 
     .catch((err) => {
-      console.error(err);
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(ERROR_CODES.AUTHORIZATION_ERROR)
+          .send({ message: ERROR_MESSAGES.AUTHORIZATION_ERROR });
+      }
 
-      res.status(401).send({ message: err.message });
+      return res
+        .status(ERROR_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
 
-module.exports.updateUser = (req, res,next) => {
+module.exports.updateUser = (req, res) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
 
@@ -175,21 +162,26 @@ module.exports.updateUser = (req, res,next) => {
   if (avatar) updates.avatar = avatar;
 
   return user
-    .findById(userId)
+    .findByIdAndUpdate(userId)
     .then((users) => {
       if (!users) {
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
-      return users.updateOne(updates);
+      return users;
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res
-          .status(400)
-          .json({ msg: "Validation Error", errors: err.errors });
+          .status(ERROR_CODES.BAD_REQUEST)
+          .json({
+            msg: "Validation Error",
+            errors: ERROR_MESSAGES.BAD_REQUEST,
+          });
       }
-      return next();
+      return res
+        .status(ERROR_CODES.SERVER_ERROR)
+        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
     });
 };
