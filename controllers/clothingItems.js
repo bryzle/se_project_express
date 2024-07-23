@@ -2,13 +2,11 @@ const clothingItem = require("../models/clothingItem");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 module.exports.getItems = (req, res) => {
-   clothingItem
+  clothingItem
     .find({})
-    .then((items) =>
-      res.send(items)
-    )
+    .then((items) => res.send(items))
     .catch(() =>
-       res
+      res
         .status(ERROR_CODES.SERVER_ERROR)
         .send({ message: ERROR_MESSAGES.SERVER_ERROR })
     );
@@ -18,7 +16,7 @@ module.exports.deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   return clothingItem
-    .findByIdAndDelete(itemId)
+    .findById(itemId)
     .then((item) => {
       if (!item) {
         return res
@@ -57,7 +55,9 @@ module.exports.addItem = (req, res) => {
   const owner = req.user._id;
 
   if (!name || !weather || !imageUrl) {
-    return res.status(ERROR_CODES.BAD_REQUEST).send(ERROR_MESSAGES.BAD_REQUEST);
+    return res
+      .status(ERROR_CODES.BAD_REQUEST)
+      .send({ message: ERROR_MESSAGES.BAD_REQUEST });
   }
 
   return clothingItem

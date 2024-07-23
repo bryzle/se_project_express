@@ -162,21 +162,21 @@ module.exports.updateUser = (req, res) => {
   if (avatar) updates.avatar = avatar;
 
   return user
-    .findByIdAndUpdate(userId)
+    .findByIdAndUpdate(userId, {new:true, runValidators:true})
     .then((users) => {
       if (!users) {
         return res
           .status(ERROR_CODES.NOT_FOUND)
           .send({ message: ERROR_MESSAGES.NOT_FOUND });
       }
-      return users;
+      return res.send(users);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
           .json({
-            msg: "Validation Error",
+            message: "Validation Error",
             errors: ERROR_MESSAGES.BAD_REQUEST,
           });
       }
