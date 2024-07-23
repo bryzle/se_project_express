@@ -20,7 +20,6 @@ module.exports.getCurrentUsers = (req, res) => {
       return res.status(200).send(users);
     })
     .catch((err) => {
-
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
@@ -55,7 +54,6 @@ module.exports.getUser = (req, res) => {
       return res.send(users);
     })
     .catch((err) => {
-
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
@@ -105,7 +103,6 @@ module.exports.createUser = async (req, res) => {
     newUser.password = undefined;
     return res.send(newUser);
   } catch (err) {
-
     if (err.name === "ValidationError") {
       return res
         .status(ERROR_CODES.BAD_REQUEST)
@@ -162,7 +159,7 @@ module.exports.updateUser = (req, res) => {
   if (avatar) updates.avatar = avatar;
 
   return user
-    .findByIdAndUpdate(userId, {new:true, runValidators:true})
+    .findByIdAndUpdate(userId, updates, { new: true, runValidators: true })
     .then((users) => {
       if (!users) {
         return res
@@ -173,12 +170,10 @@ module.exports.updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res
-          .status(ERROR_CODES.BAD_REQUEST)
-          .json({
-            message: "Validation Error",
-            errors: ERROR_MESSAGES.BAD_REQUEST,
-          });
+        return res.status(ERROR_CODES.BAD_REQUEST).json({
+          message: "Validation Error",
+          errors: ERROR_MESSAGES.BAD_REQUEST,
+        });
       }
       return res
         .status(ERROR_CODES.SERVER_ERROR)
