@@ -131,6 +131,7 @@ module.exports.login = (req, res) => {
   return user
     .findUserByCredentials(email, password)
     .then((users) => {
+      console.log("User Found:", users);
       const token = jwt.sign({ _id: users._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
@@ -138,6 +139,7 @@ module.exports.login = (req, res) => {
     })
 
     .catch((err) => {
+      console.log("Login Error", err);
       if (err.message === "Incorrect email or password") {
         return res
           .status(ERROR_CODES.AUTHORIZATION_ERROR)
