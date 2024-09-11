@@ -19,8 +19,8 @@ const auth = (req, res, next) => {
       .send({ message: ERROR_MESSAGES.AUTHORIZATION_ERROR });
   }
 
-   (req.user = payload);
-  return next();
+  req.user = payload;
+  next();
 };
 
 module.exports = auth;
