@@ -34,6 +34,7 @@ module.exports.deleteItem = (req, res) => {
     })
 
     .catch((err) => {
+      console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(ERROR_CODES.NOT_FOUND)
@@ -64,6 +65,7 @@ module.exports.addItem = (req, res) => {
     .create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send(item))
     .catch((err) => {
+      console.log(err);
       if (err.name === "ValidationError") {
         return res
           .status(ERROR_CODES.BAD_REQUEST)
