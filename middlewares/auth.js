@@ -17,10 +17,11 @@ const auth = (req, res, next) => {
     return res
       .status(ERROR_CODES.AUTHORIZATION_ERROR)
       .send({ message: ERROR_MESSAGES.AUTHORIZATION_ERROR });
+      
   }
 
   req.user = payload;
-  next();
+
 };
 
 module.exports = auth;

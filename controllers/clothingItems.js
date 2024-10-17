@@ -1,15 +1,16 @@
 const clothingItem = require("../models/clothingItem");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
+const NotFoundError = require("../errors/not-found-error");
+const BadRequestError = require("../errors/bad-request-error");
+const conflictError = require("../errors/conflict-error");
+const forbiddenError = require("../errors/forbidden-error");
+const serverError = require("../errors/server-error");
 
 module.exports.getItems = (req, res) => {
   clothingItem
     .find({})
     .then((items) => res.send(items))
-    .catch(() =>
-      res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR })
-    );
+    .catch(() => next(new serverError(ERROR_MESSAGES.SERVER_ERROR)));
 };
 
 module.exports.deleteItem = (req, res) => {
@@ -19,15 +20,11 @@ module.exports.deleteItem = (req, res) => {
     .findById(itemId)
     .then((item) => {
       if (!item) {
-        return res
-          .status(ERROR_CODES.NOT_FOUND)
-          .json({ message: ERROR_MESSAGES.NOT_FOUND });
+        throw new NotFoundError(ERROR_MESSAGES.NOT_FOUND);
       }
 
       if (String(item.owner) !== req.user._id) {
-        return res
-          .status(ERROR_CODES.FORBIDDEN)
-          .send({ message: ERROR_MESSAGES.FORBIDDEN });
+        throw new forbiddenError(ERROR_MESSAGES.FORBIDDEN);
       }
 
       return item.deleteOne().then(() => res.send({ message: "Item deleted" }));
@@ -36,18 +33,12 @@ module.exports.deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(ERROR_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.NOT_FOUND });
+        next(new NotFoundError(ERROR_MESSAGES.NOT_FOUND));
       }
       if (err.name === "CastError") {
-        return res
-          .status(ERROR_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.BAD_REQUEST });
+        next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      next(new serverError(ERROR_MESSAGE.SERVER_ERROR));
     });
 };
 
@@ -56,9 +47,7 @@ module.exports.addItem = (req, res) => {
   const owner = req.user._id;
 
   if (!name || !weather || !imageUrl) {
-    return res
-      .status(ERROR_CODES.BAD_REQUEST)
-      .send({ message: ERROR_MESSAGES.BAD_REQUEST });
+    throw new BadRequestError(ERROR_MESSAGES.BAD_REQUEST);
   }
 
   return clothingItem
@@ -67,13 +56,9 @@ module.exports.addItem = (req, res) => {
     .catch((err) => {
       console.log(err);
       if (err.name === "ValidationError") {
-        return res
-          .status(ERROR_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.BAD_REQUEST });
+        next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      next(new serverError(ERROR_MESSAGES.SERVER_ERROR));
     });
 };
 
@@ -88,18 +73,12 @@ module.exports.likeItem = (req, res) => {
     .then((item) => res.json(item))
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(ERROR_CODES.NOT_FOUND)
-          .json({ message: ERROR_MESSAGES.NOT_FOUND });
+        next(new NotFoundError(ERROR_MESSAGES.NOT_FOUND));
       }
       if (err.name === "CastError") {
-        return res
-          .status(ERROR_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.BAD_REQUEST });
+        next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .json({ message: ERROR_MESSAGES.SERVER_ERROR });
+      next(new serverError(ERROR_MESSAGES.SERVER_ERROR));
     });
 };
 
@@ -114,18 +93,13 @@ module.exports.dislikeItem = (req, res) => {
     .then((item) => res.send(item))
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(ERROR_CODES.NOT_FOUND)
-          .json({ message: ERROR_MESSAGES.NOT_FOUND });
+        next(new NotFoundError(ERROR_MESSAGES.NOT_FOUND));
       }
 
       if (err.name === "CastError") {
-        return res
-          .status(ERROR_CODES.BAD_REQUEST)
-          .send({ message: ERROR_MESSAGES.BAD_REQUEST });
+        next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+
+      next(new serverError(ERROR_MESSAGES.serverError));
     });
 };
