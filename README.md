@@ -1,6 +1,8 @@
 # WTWR (What to Wear?): Back End
 This project is a RESTful API built with Express.js, designed to manage users and clothing items. It provides endpoints for creating, reading, updating, and deleting (CRUD) both users and clothing items. The application includes features such as user authentication and error handling, ensuring robust and secure interactions with the API.
 
+# Domain Name : wtwr.brandonlum.com
+
 # Functionality
 The main functionalities of the project include:
 
