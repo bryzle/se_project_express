@@ -1,16 +1,15 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const user = require("../models/user");
-const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
+const {  ERROR_MESSAGES } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 const NotFoundError = require("../errors/not-found-error");
-const authorizationError = require("../errors/authorization-error");
+const AuthorizationError = require("../errors/authorization-error");
 const BadRequestError = require("../errors/bad-request-error");
-const conflictError = require("../errors/conflict-error");
-const forbiddenError = require("../errors/forbidden-error");
-const serverError = require("../errors/server-error");
+const ConflictError = require("../errors/conflict-error");
+const ServerError = require("../errors/server-error");
 
-module.exports.getCurrentUsers = (req, res) => {
+module.exports.getCurrentUsers = (req, res,next) => {
   const userId = req.user._id;
 
   user
@@ -25,18 +24,18 @@ module.exports.getCurrentUsers = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        next(new BadRequestError(ERROR_MESSAGE.BAD_REQUEST));
+        next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
 
       if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError(ERROR_MESSAGES.NOT_FOUND));
       }
 
-      next(new serverError(ERROR_MESSAGES.SERVER_ERROR));
+      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
     });
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res,next) => {
   const userId = req.user_id;
 
   return user
@@ -54,26 +53,26 @@ module.exports.getUser = (req, res) => {
         next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
       if (err.name === "DocumentNotFoundError") {
-        next(newNotFoundError(ERROR_MESSAGES.NOT_FOUND));
+        next(new NotFoundError(ERROR_MESSAGES.NOT_FOUND));
       }
 
-      next(new serverError(ERROR_MESSAGES.SERVER_ERROR));
+      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
     });
 };
 
-module.exports.createUser = async (req, res) => {
+module.exports.createUser = async (req, res,next) => {
   const { name, avatar, email, password } = req.body;
 
   // Validate required fields
   if (!name || !avatar || !email || !password) {
-    throw new BAD_REQUEST(ERROR_MESSAGES.BAD_REQUEST);
+    throw new BadRequestError(ERROR_MESSAGES);
   }
 
   try {
     // Check if the user already exists
     const existingUser = await user.findOne({ email });
     if (existingUser) {
-      throw new conflictError(ERROR_MESSAGES.conflictError);
+      throw new ConflictError(ERROR_MESSAGES.ConflictError);
     }
 
     // Hash the password
@@ -94,14 +93,14 @@ module.exports.createUser = async (req, res) => {
     }
     if (err.code === 11000) {
       // Handle MongoDB duplicate error
-      next(new conflictError(ERROR_MESSAGES.conflictError));
+      next(new ConflictError(ERROR_MESSAGES.ConflictError));
     }
 
-    next(new serverError(ERROR_MESSAGES.serverError));
+   return next(new ServerError(ERROR_MESSAGES.ServerError));
   }
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res,next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     throw new BadRequestError(ERROR_MESSAGES.BAD_REQUEST);
@@ -109,7 +108,7 @@ module.exports.login = (req, res) => {
   return user
     .findUserByCredentials(email, password)
     .then((users) => {
-      console.log("User Found:", users);
+
       const token = jwt.sign({ _id: users._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
@@ -117,16 +116,16 @@ module.exports.login = (req, res) => {
     })
 
     .catch((err) => {
-      console.log("Login Error", err);
+
       if (err.message === "Incorrect email or password") {
-        next(new authorizationError(ERROR_MESSAGES.authorizationError));
+        next(new AuthorizationError(ERROR_MESSAGES.AuthorizationError));
       }
 
-      next(new serverError(ERROR_MESSAGES.SERVER_ERROR));
+      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res,next) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
 
@@ -146,6 +145,6 @@ module.exports.updateUser = (req, res) => {
       if (err.name === "ValidationError") {
         next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      next(new serverError(ERROR_MESSAGES.SERVER_ERROR));
+      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
     });
 };

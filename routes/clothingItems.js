@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const clothingItem = require("../controllers/clothingItems");
 const auth = require("../middlewares/auth");
+
 const { getItems, deleteItem, addItem, likeItem, dislikeItem } = clothingItem;
 const {
   validateId,

@@ -1,19 +1,18 @@
 const clothingItem = require("../models/clothingItem");
-const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
+const { ERROR_MESSAGES } = require("../utils/errors");
 const NotFoundError = require("../errors/not-found-error");
 const BadRequestError = require("../errors/bad-request-error");
-const conflictError = require("../errors/conflict-error");
-const forbiddenError = require("../errors/forbidden-error");
-const serverError = require("../errors/server-error");
+const ForbiddenError = require("../errors/forbidden-error");
+const ServerError = require("../errors/server-error");
 
-module.exports.getItems = (req, res) => {
+module.exports.getItems = (req, res,next) => {
   clothingItem
     .find({})
     .then((items) => res.send(items))
-    .catch(() => next(new serverError(ERROR_MESSAGES.SERVER_ERROR)));
+    .catch(() => next(new ServerError(ERROR_MESSAGES.SERVER_ERROR)));
 };
 
-module.exports.deleteItem = (req, res) => {
+module.exports.deleteItem = (req, res,next) => {
   const { itemId } = req.params;
 
   return clothingItem
@@ -24,25 +23,25 @@ module.exports.deleteItem = (req, res) => {
       }
 
       if (String(item.owner) !== req.user._id) {
-        throw new forbiddenError(ERROR_MESSAGES.FORBIDDEN);
+        throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
       }
 
       return item.deleteOne().then(() => res.send({ message: "Item deleted" }));
     })
 
     .catch((err) => {
-      console.error(err);
+
       if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError(ERROR_MESSAGES.NOT_FOUND));
       }
       if (err.name === "CastError") {
         next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      next(new serverError(ERROR_MESSAGE.SERVER_ERROR));
+      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
     });
 };
 
-module.exports.addItem = (req, res) => {
+module.exports.addItem = (req, res,next) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
@@ -54,15 +53,15 @@ module.exports.addItem = (req, res) => {
     .create({ name, weather, imageUrl, owner })
     .then((item) => res.status(201).send(item))
     .catch((err) => {
-      console.log(err);
+
       if (err.name === "ValidationError") {
         next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      next(new serverError(ERROR_MESSAGES.SERVER_ERROR));
+      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
     });
 };
 
-module.exports.likeItem = (req, res) => {
+module.exports.likeItem = (req, res,next) => {
   clothingItem
     .findByIdAndUpdate(
       req.params.itemId,
@@ -78,11 +77,11 @@ module.exports.likeItem = (req, res) => {
       if (err.name === "CastError") {
         next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      next(new serverError(ERROR_MESSAGES.SERVER_ERROR));
+      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
     });
 };
 
-module.exports.dislikeItem = (req, res) => {
+module.exports.dislikeItem = (req, res,next) => {
   clothingItem
     .findByIdAndUpdate(
       req.params.itemId,
@@ -100,6 +99,6 @@ module.exports.dislikeItem = (req, res) => {
         next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
 
-      next(new serverError(ERROR_MESSAGES.serverError));
+      next(new ServerError(ERROR_MESSAGES.ServerError));
     });
 };
