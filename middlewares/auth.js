@@ -19,8 +19,8 @@ const auth = (req, res, next) => {
     return next(error);
   }
 
-   (req.user = payload);
-  return next();
+  req.user = payload;
+
 };
 
 module.exports = auth;
