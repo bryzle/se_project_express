@@ -7,7 +7,7 @@ const { getCurrentUsers, getUser, updateUser  } = user;
 
 
 router.get("/me", auth, getCurrentUsers);
-router.get("/:id",validateId, auth, getUser);
+
 router.patch("/me", auth, updateUser);
 
 module.exports = router;

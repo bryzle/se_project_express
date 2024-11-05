@@ -7,7 +7,7 @@ const NotFoundError = require("../errors/not-found-error");
 const AuthorizationError = require("../errors/authorization-error");
 const BadRequestError = require("../errors/bad-request-error");
 const ConflictError = require("../errors/conflict-error");
-const ServerError = require("../errors/server-error");
+
 
 module.exports.getCurrentUsers = (req, res,next) => {
   const userId = req.user._id;
@@ -31,48 +31,24 @@ module.exports.getCurrentUsers = (req, res,next) => {
         next(new NotFoundError(ERROR_MESSAGES.NOT_FOUND));
       }
 
-      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
+      next(err);
     });
 };
 
-module.exports.getUser = (req, res,next) => {
-  const userId = req.user_id;
-
-  return user
-    .findById(userId)
-    .select("-password")
-    .then((users) => {
-      if (!users) {
-        throw new NotFoundError(ERROR_MESSAGES.NOT_FOUND);
-      }
-
-      return res.send(users);
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
-      }
-      if (err.name === "DocumentNotFoundError") {
-        next(new NotFoundError(ERROR_MESSAGES.NOT_FOUND));
-      }
-
-      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
-    });
-};
 
 module.exports.createUser = async (req, res,next) => {
   const { name, avatar, email, password } = req.body;
 
   // Validate required fields
   if (!name || !avatar || !email || !password) {
-    throw new BadRequestError(ERROR_MESSAGES);
+    throw new BadRequestError(ERROR_MESSAGES.BAD_REQUEST);
   }
 
   try {
     // Check if the user already exists
     const existingUser = await user.findOne({ email });
     if (existingUser) {
-      throw new ConflictError(ERROR_MESSAGES.ConflictError);
+      throw new ConflictError(ERROR_MESSAGES.Conflict);
     }
 
     // Hash the password
@@ -93,10 +69,10 @@ module.exports.createUser = async (req, res,next) => {
     }
     if (err.code === 11000) {
       // Handle MongoDB duplicate error
-      next(new ConflictError(ERROR_MESSAGES.ConflictError));
+      next(new ConflictError(ERROR_MESSAGES.Conflict));
     }
 
-   return next(new ServerError(ERROR_MESSAGES.ServerError));
+   return next(err);
   }
 };
 
@@ -118,10 +94,10 @@ module.exports.login = (req, res,next) => {
     .catch((err) => {
 
       if (err.message === "Incorrect email or password") {
-        next(new AuthorizationError(ERROR_MESSAGES.AuthorizationError));
+        next(new AuthorizationError(ERROR_MESSAGES.AUTHORIZATION_ERROR));
       }
 
-      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
+      next(err);
     });
 };
 
@@ -145,6 +121,6 @@ module.exports.updateUser = (req, res,next) => {
       if (err.name === "ValidationError") {
         next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
+      next(err);
     });
 };

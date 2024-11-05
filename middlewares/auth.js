@@ -1,10 +1,11 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
+const AuthorizationError = require("../errors/authorization-error");
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
-  const error = new Error(ERROR_MESSAGES.AUTHORIZATION_ERROR);
+  const error = new AuthorizationError(ERROR_MESSAGES.AUTHORIZATION_ERROR);
   if (!authorization || !authorization.startsWith("Bearer")) {
 
       error.status = ERROR_CODES.AUTHORIZATION_ERROR;

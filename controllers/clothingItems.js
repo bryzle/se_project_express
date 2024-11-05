@@ -34,10 +34,10 @@ module.exports.deleteItem = (req, res,next) => {
       if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError(ERROR_MESSAGES.NOT_FOUND));
       }
-      if (err.name === "CastError") {
+      else if (err.name === "CastError") {
         next(new BadRequestError(ERROR_MESSAGES.BAD_REQUEST));
       }
-      next(new ServerError(ERROR_MESSAGES.SERVER_ERROR));
+      next(err);
     });
 };
 
