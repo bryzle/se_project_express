@@ -51,3 +51,14 @@ module.exports.validateId = celebrate({
     itemId: Joi.string().hex().length(24).required(),
   }),
 });
+
+module.exports.validateUserUpdate = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    avatar: Joi.string().custom(validateURL).messages({
+      "string.empty": 'The "imageUrl" field must be filled in',
+      "string.uri": 'the "imageUrl" field must be a valid url',
+    }),
+  }),
+
+})
