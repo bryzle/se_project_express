@@ -33,12 +33,7 @@ module.exports.validateNewUser = celebrate({
 
 module.exports.validateUserLogin = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
     email: Joi.string().custom(validateURL).messages({
-      "string.empty": 'The "imageUrl" field must be filled in',
-      "string.uri": 'the "imageUrl" field must be a valid url',
-    }),
-    avatar: Joi.string().custom(validateURL).messages({
       "string.empty": 'The "imageUrl" field must be filled in',
       "string.uri": 'the "imageUrl" field must be a valid url',
     }),
@@ -60,5 +55,4 @@ module.exports.validateUserUpdate = celebrate({
       "string.uri": 'the "imageUrl" field must be a valid url',
     }),
   }),
-
-})
+});
