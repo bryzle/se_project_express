@@ -13,11 +13,15 @@ const mainRouter = require("./routes/index");
 
 const app = express();
 const { PORT = 3001 } = process.env;
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/wtwr_db";
 
 
 
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: ['https://wtwr.brandonlum.com','http://localhost:3000' ], // your frontend domain
+  credentials: true, // if you're using cookies/auth
+}));
 app.use(express.json());
 app.use(limiter);
 app.use(requestLogger);
@@ -28,7 +32,7 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-mongoose.connect(process.env.MONGODB_URI).then(() => {
+mongoose.connect(MONGODB_URI).then(() => {
 });
 
 app.use("/", mainRouter);
@@ -37,10 +41,7 @@ app.use(errorLogger); // Log errors after routes
 app.use(errors()); // Celebrate errors
 app.use(errorHandler); // Centralized error handler
 
-app.use(cors({
-  origin: ['https://wtwr.brandonlum.com','http://localhost:3000' ], // your frontend domain
-  credentials: true, // if you're using cookies/auth
-}));
+
 
 
 app.listen(PORT, () => {
