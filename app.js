@@ -35,6 +35,15 @@ app.get('/crash-test', () => {
 mongoose.connect(MONGODB_URI).then(() => {
 });
 
+if (process.env.NODE_ENV === 'test') {
+  app.use((req, res, next) => {
+    req.user = {
+      _id: '5d8d8592978f8bd833ca8133',
+    };
+    next();
+  });
+}
+
 app.use("/", mainRouter);
 
 app.use(errorLogger); // Log errors after routes
