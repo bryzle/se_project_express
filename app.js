@@ -28,7 +28,7 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db").then(() => {
+mongoose.connect(process.env.MONGODB_URI).then(() => {
 });
 
 app.use("/", mainRouter);
