@@ -37,6 +37,12 @@ app.use(errorLogger); // Log errors after routes
 app.use(errors()); // Celebrate errors
 app.use(errorHandler); // Centralized error handler
 
+app.use(cors({
+  origin: ['https://wtwr.brandonlum.com','http://localhost:3000' ], // your frontend domain
+  credentials: true, // if you're using cookies/auth
+}));
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
